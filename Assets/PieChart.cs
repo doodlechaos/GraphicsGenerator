@@ -64,9 +64,10 @@ public class PieChart : MonoBehaviour
             img.color = nextColor; 
             newImage.transform.position = transform.position;
             newImage.transform.rotation = transform.rotation;
-            newImage.transform.localScale = transform.localScale;
             newImage.transform.SetParent(canvas.transform);
             newImage.transform.SetAsFirstSibling();
+            newImage.transform.localScale = transform.localScale;
+
 
             chartImages.Add(img);
         }
