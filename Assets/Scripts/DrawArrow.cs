@@ -9,7 +9,7 @@ public class DrawArrow : MonoBehaviour
     public SpriteShapeRenderer ssr; 
     public SpriteShapeController ssc; 
     public Transform startTransform; 
-    public Transform endTransform;
+    public ArrowTarget arrowTarget;
 
     [SerializeField] private float DrawDuration;
 
@@ -26,17 +26,37 @@ public class DrawArrow : MonoBehaviour
     private float currTipLength;
     private float currtipWidth;
 
-    public float animateTimer; 
+    public float animateTimer;
+
+    [SerializeField] public bool disable;
+
+    private bool reachedTarget = false; 
 
     // Update is called once per frame
     void Update()
     {
+        if (disable)
+            return;
+
         if(animateTimer < DrawDuration)
         {
+            float t = animateTimer / DrawDuration; 
             //Fade in 
             Color currColor = ssr.color;
-            currColor.a = Mathf.Lerp(0, 1, animateTimer / DrawDuration);
-            ssr.color = currColor; 
+            currColor.a = Mathf.Lerp(0, 1, t);
+            ssr.color = currColor;
+
+            float length = Vector3.Distance(startTransform.position, arrowTarget.transform.position);
+
+            currEndSeparation = Mathf.Lerp(length - 2.5f, EndSeparation, t);
+        }
+        else
+        {
+            if (!reachedTarget)
+            {
+                reachedTarget = true;
+                arrowTarget.ReceiveArrow(ssr.color);
+            }
         }
         SetCornerPositions();
         animateTimer += Time.deltaTime; 
@@ -44,10 +64,10 @@ public class DrawArrow : MonoBehaviour
 
     public void SetCornerPositions()
     {
-        Vector3 direction = (endTransform.position - startTransform.position).normalized;
+        Vector3 direction = (arrowTarget.transform.position - startTransform.position).normalized;
         Vector3 tangent = Vector3.Cross(direction, Vector3.forward).normalized; 
         Vector3 startPos = startTransform.position + direction * StartSeparation;
-        Vector3 endPos = endTransform.position - direction * EndSeparation;
+        Vector3 endPos = arrowTarget.transform.position - direction * currEndSeparation;
 
         //Stem positions
         //Stem by start pos
@@ -71,16 +91,5 @@ public class DrawArrow : MonoBehaviour
         ssc.spline.SetPosition(6, stemTopLeft);
 
     }
-
-    public void StartDrawing()
-    {
-
-    }
-
-    public void StopDrawing()
-    {
-
-    }
-
 
 }

@@ -16,7 +16,9 @@ public class PieChart : MonoBehaviour
 
     [SerializeField] private List<Image> chartImages = new List<Image>();
 
-    [SerializeField] private bool isDirty = true; 
+    [SerializeField] private bool isDirty = true;
+
+    private Color nextColor = Color.white; 
 
     // Start is called before the first frame update
     void Start()
@@ -32,6 +34,13 @@ public class PieChart : MonoBehaviour
 
         SetImageFillValues();
 
+    }
+
+    public void AddValue(float value, Color color)
+    {
+        values.Add(value); 
+        nextColor = color;
+        isDirty = true; 
     }
 
     private void SetImageFillValues()
@@ -52,7 +61,7 @@ public class PieChart : MonoBehaviour
             img.sprite = circleSprite;
             img.type = Image.Type.Filled;
             img.fillMethod = Image.FillMethod.Radial360;
-            img.color = Random.ColorHSV(); 
+            img.color = nextColor; 
             newImage.transform.position = transform.position;
             newImage.transform.rotation = transform.rotation;
             newImage.transform.localScale = transform.localScale;
